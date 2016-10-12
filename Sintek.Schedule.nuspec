@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>Sintek.Schedule</id>
+        <version>0.1.0</version>
+        <authors>Ilya Breev</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Compact Quartz.net based library for quick integration of task scheduling into you app.</description>
+        <copyright>Sintek</copyright>
+        <language>en-US</language>
+        <tags>quartz, scheduler</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="Quartz" version="2.4.1" />
+                <dependency id="CommandLineParser" version="1.9.71" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="Sintek.Schedule.Core\bin\Release\Sintek.Schedule.Core.dll" target="lib\net45\Sintek.Schedule.Core.dll" />
+    </files>
+</package>
