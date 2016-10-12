@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Sintek.Schedule.Cli")]
+[assembly: AssemblyTitle("Sintek.Schedule.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Sintek.Schedule.Cli")]
+[assembly: AssemblyProduct("Sintek.Schedule.Core")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cda73985-8be6-4f54-b375-9c189ec913a0")]
+[assembly: Guid("ca5b68aa-fed6-4179-93e1-92e0354eb22f")]
 
 // Version information for an assembly consists of the following four values:
 //

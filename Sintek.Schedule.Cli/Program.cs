@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sintek.Schedule.Cli
+﻿namespace Sintek.Schedule.Cli
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            var scheduler = new TestScheduler();
+            scheduler.Start(args);
+            return 0;
         }
     }
 }

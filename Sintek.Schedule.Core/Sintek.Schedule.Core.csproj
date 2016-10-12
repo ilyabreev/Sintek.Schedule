@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CDA73985-8BE6-4F54-B375-9C189EC913A0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{CA5B68AA-FED6-4179-93E1-92E0354EB22F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sintek.Schedule.Cli</RootNamespace>
-    <AssemblyName>Sintek.Schedule.Cli</AssemblyName>
+    <RootNamespace>Sintek.Schedule.Core</RootNamespace>
+    <AssemblyName>Sintek.Schedule.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -58,24 +56,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Job.cs" />
+    <Compile Include="Options\BaseOptions.cs" />
+    <Compile Include="Options\JobOptionsParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestJob.cs" />
-    <Compile Include="TestOptions.cs" />
-    <Compile Include="TestScheduler.cs" />
+    <Compile Include="ScheduledJob.cs" />
+    <Compile Include="Scheduler.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="job_scheduling_data_2_0.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Sintek.Schedule.Core\Sintek.Schedule.Core.csproj">
-      <Project>{ca5b68aa-fed6-4179-93e1-92e0354eb22f}</Project>
-      <Name>Sintek.Schedule.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
