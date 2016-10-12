@@ -60,3 +60,9 @@ public static int Main(string[] args)
 }
 ```
 Each your job can be run manually by passing `-j` command line arg with name of the job.
+
+## How to install?
+
+### NuGet
+
+`Install-Package Sintek.Schedule`
