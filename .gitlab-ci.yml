@@ -29,12 +29,7 @@ stylecop:
 pages:
   stage: deploy
   script:
-  - xcopy /c /i /q %GitlabRunner%\public .\public
-  - echo var repoUrl = "%CI_PROJECT_URL%";> public\dynamic.js
-  - echo var projName = "%PROJECT_NAME%";>> public\dynamic.js
-  - cmd /c xcopy /c /i /q report public\report && exit /b 0
-  - cmd /c xcopy /c /i /q StyleCop public\StyleCop && exit /b 0
-  - cmd /c xcopy /c /i /q TestResult.html public && exit /b 0
+  - '%GitlabRunner%\pages'
   when: always
   dependencies:
   - stylecop
