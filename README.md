@@ -1,3 +1,5 @@
+[![build status](http://gitlab.local/sintek/schedule/badges/master/build.svg)](http://sintek.pages.local/schedule/TestResult.html)
+[![NuGet](https://img.shields.io/nuget/v/Sintek.Schedule.svg)](https://www.nuget.org/packages/Sintek.Schedule/)
 # Sintek.Schedule
 Compact Quartz.net based library for quick integration of task scheduling into you app
 

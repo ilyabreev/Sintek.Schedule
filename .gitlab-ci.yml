@@ -1,0 +1,55 @@
+variables:
+  PROJECT_NAME: "Sintek.Schedule"
+before_script:
+  - chcp 65001
+  - echo "starting build for %PROJECT_NAME%"
+  - echo "Restoring NuGet Packages..."
+  - '%GitlabRunner%\nuget restore "%PROJECT_NAME%.sln"'
+stages:
+  - build
+  - test
+  - test_report
+  - deploy
+build:
+  stage: build
+  script:
+  - echo "Release build..."
+  - '%GitlabRunner%\build %PROJECT_NAME%'
+  artifacts:
+    untracked: true
+stylecop:
+  stage: test
+  script:
+  - echo "starting stylecop"
+  - xcopy /c /i /q %GitlabRunner%\ReportStyleCop\run.proj
+  - '%GitlabRunner%\ReportStyleCop\runStylecop'
+  artifacts:
+    paths:
+    - StyleCop
+pages:
+  stage: deploy
+  script:
+  - xcopy /c /i /q %GitlabRunner%\public .\public
+  - echo var repoUrl = "%CI_PROJECT_URL%";> public\dynamic.js
+  - echo var projName = "%PROJECT_NAME%";>> public\dynamic.js
+  - xcopy /c /i /q report public\report
+  - xcopy /c /i /q StyleCop public\StyleCop
+  - xcopy /c /i /q TestResult.html public
+  when: always
+  dependencies:
+  - stylecop
+  artifacts:
+    paths:
+    - public
+package:
+  stage: deploy
+  script:
+  - echo "Publishing NuGet package"
+  - '%GitlabRunner%\nuget_publish_remote "%CI_BUILD_TAG%" %PROJECT_NAME%'
+  only:
+  - tags
+  dependencies:
+  - build
+  artifacts:
+    paths:
+    - "*.nupkg"
