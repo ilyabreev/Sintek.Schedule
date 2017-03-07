@@ -21,7 +21,6 @@ stylecop:
   stage: test
   script:
   - echo "starting stylecop"
-  - xcopy /c /i /q %GitlabRunner%\ReportStyleCop\run.proj
   - '%GitlabRunner%\ReportStyleCop\runStylecop'
   artifacts:
     paths:
