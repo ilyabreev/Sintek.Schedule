@@ -2,7 +2,6 @@ variables:
   PROJECT_NAME: "Sintek.Schedule"
 before_script:
   - chcp 65001
-  - echo "starting build for %PROJECT_NAME%"
   - echo "Restoring NuGet Packages..."
   - '%GitlabRunner%\nuget restore "%PROJECT_NAME%.sln"'
 stages:
@@ -14,32 +13,47 @@ build:
   stage: build
   script:
   - echo "Release build..."
-  - '%GitlabRunner%\build %PROJECT_NAME%'
+  - '%GitlabRunner%\bin\build %PROJECT_NAME%'
   artifacts:
+    expire_in: 1 day
     untracked: true
 stylecop:
   stage: test
   script:
-  - echo "starting stylecop"
-  - '%GitlabRunner%\ReportStyleCop\runStylecop'
+  - echo "Starting stylecop"
+  - '%GitlabRunner%\bin\stylecop'
   artifacts:
+    expire_in: 1 day
     paths:
     - StyleCop
+metrics:
+  stage: test
+  script:
+  - echo "Starting metrics"
+  - '%GitlabRunner%\bin\metrics'
+  dependencies:
+  - build
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - MetricsResults.html
 pages:
   stage: deploy
   script:
-  - '%GitlabRunner%\pages'
+  - '%GitlabRunner%\bin\pages'
   when: always
   dependencies:
   - stylecop
+  - metrics
   artifacts:
+    expire_in: 1 mos
     paths:
     - public
 package:
   stage: deploy
   script:
   - echo "Publishing NuGet package"
-  - '%GitlabRunner%\nuget_publish_remote "%CI_BUILD_TAG%" %PROJECT_NAME%'
+  - '%GitlabRunner%\bin\nuget_publish_remote'
   only:
   - tags
   dependencies:
