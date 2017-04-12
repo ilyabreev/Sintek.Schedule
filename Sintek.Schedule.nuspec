@@ -10,7 +10,7 @@
         <language>en-US</language>
         <tags>quartz, scheduler</tags>
         <dependencies>
-            <group targetFramework=".NETFramework4.5">
+            <group targetFramework=".NETFramework4.5.2">
                 <dependency id="Quartz" version="2.4.1" />
                 <dependency id="CommandLineParser" version="1.9.71" />
                 <dependency id="Autofac" version="4.3.0" />
@@ -19,6 +19,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="Sintek.Schedule.Core\bin\Release\Sintek.Schedule.Core.dll" target="lib\net45\Sintek.Schedule.Core.dll" />
+        <file src="Sintek.Schedule.Core\bin\Release\Sintek.Schedule.Core.dll" target="lib\net452\Sintek.Schedule.Core.dll" />
     </files>
 </package>
