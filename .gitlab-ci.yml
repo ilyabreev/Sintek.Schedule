@@ -49,11 +49,23 @@ pages:
     expire_in: 1 mos
     paths:
     - public
-package:
+package_remote:
   stage: deploy
   script:
   - echo "Publishing NuGet package"
   - '%GitlabRunner%\bin\nuget_publish_remote'
+  only:
+  - tags
+  dependencies:
+  - build
+  artifacts:
+    paths:
+    - "*.nupkg"
+package:
+  stage: deploy
+  script:
+  - echo "Publishing NuGet package"
+  - '%GitlabRunner%\bin\nuget_publish'
   only:
   - tags
   dependencies:
