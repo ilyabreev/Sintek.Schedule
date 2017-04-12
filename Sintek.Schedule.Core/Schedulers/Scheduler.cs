@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using CommandLine;
-using Quartz;
-using Quartz.Impl;
-using Quartz.Util;
-using Sintek.Schedule.Core.Options;
-
-namespace Sintek.Schedule.Core
+﻿namespace Sintek.Schedule.Core.Schedulers
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+
+    using Autofac;
+
+    using CommandLine;
+
+    using Quartz;
+    using Quartz.Util;
+
+    using Sintek.Schedule.Core.Options;
+
     /// <summary>
     /// Task scheduler abstract class
     /// </summary>
@@ -28,6 +31,8 @@ namespace Sintek.Schedule.Core
                 s.IgnoreUnknownArguments = true;
             });
         }
+
+        protected abstract IContainer BuildContainer();
         
         public delegate void WrongBaseArguments(string[] args);
 
@@ -70,7 +75,9 @@ namespace Sintek.Schedule.Core
         /// <param name="args">Command line args</param>
         public void Start(string[] args)
         {
-            var scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            var container = BuildContainer();
+            var scheduler = container.Resolve<IScheduler>();
+            scheduler.Start();
             try
             {
                 if (!_parser.ParseArguments(args, _baseOptions))
@@ -79,12 +86,12 @@ namespace Sintek.Schedule.Core
                     return;
                 }
 
-                if (!String.IsNullOrWhiteSpace(_baseOptions.JobName))
+                if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
                 {
                     OnManualJobStart(_baseOptions.JobName);
                     object customOptions = null;
                     var baseJobType = FindBaseJobType(Assembly.GetExecutingAssembly()) ??
-                                      FindBaseJobType(Assembly.GetCallingAssembly());
+                        FindBaseJobType(Assembly.GetCallingAssembly());
                     if (baseJobType != null && baseJobType.IsGenericType)
                     {
                         var customOptionsType = baseJobType.GenericTypeArguments.FirstOrDefault();
@@ -107,19 +114,18 @@ namespace Sintek.Schedule.Core
                     ScheduleRegularJobs(scheduler);
                 }
 
-                scheduler.Start();
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
             catch (Exception e)
             {
                 OnStartError(e);
-                if (!String.IsNullOrWhiteSpace(_baseOptions.JobName))
+                if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
                 {
                     scheduler.Shutdown();
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(_baseOptions.JobName))
+            if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
             {
                 scheduler.Shutdown(true);
             }
@@ -148,14 +154,6 @@ namespace Sintek.Schedule.Core
             var job = CreateJob(jobType);
             var trigger = CreateNowTrigger(jobName);
             return new ScheduledJob(job, trigger);
-        }
-
-        private ITrigger CreateNowTrigger(string jobName)
-        {
-            return TriggerBuilder.Create()
-                .ForJob(jobName)
-                .StartNow()
-                .Build();
         }
 
         /// <summary>
@@ -193,6 +191,14 @@ namespace Sintek.Schedule.Core
             return new ScheduledJob(job, trigger);
         }
 
+        private ITrigger CreateNowTrigger(string jobName)
+        {
+            return TriggerBuilder.Create()
+                .ForJob(jobName)
+                .StartNow()
+                .Build();
+        }
+
         private ITrigger CreateDailyTrigger(string jobName, int hours, int minutes)
         {
             return TriggerBuilder.Create()
@@ -228,16 +234,16 @@ namespace Sintek.Schedule.Core
         private void ScheduleImmediateJob(IScheduler scheduler, string jobName, object options = null)
         {
             var immediateJob = Jobs.Single(job => job.JobDetail.Key.Name == jobName).JobDetail.DeepClone();
+            var item = CreateNowTriggeredJob(immediateJob.JobType);
             if (options != null)
             {
                 var optionProperties = options.GetType().GetProperties();
                 foreach (var optionProperty in optionProperties)
                 {
-                    immediateJob.JobDataMap[optionProperty.Name] = optionProperty.GetValue(options, null);
+                    item.JobDetail.JobDataMap[optionProperty.Name] = optionProperty.GetValue(options, null);
                 }
             }
 
-            var item = CreateNowTriggeredJob(immediateJob.JobType);
             scheduler.ScheduleJob(item.JobDetail, item.Trigger);
         }
 

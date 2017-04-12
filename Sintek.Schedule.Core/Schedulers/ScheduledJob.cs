@@ -1,7 +1,7 @@
-﻿using Quartz;
-
-namespace Sintek.Schedule.Core
+﻿namespace Sintek.Schedule.Core.Schedulers
 {
+    using Quartz;
+
     public class ScheduledJob
     {
         public ScheduledJob(IJobDetail jobDetail, ITrigger trigger)

@@ -2,6 +2,12 @@
 
 namespace Sintek.Schedule.Cli
 {
+    using System.Reflection;
+
+    using Autofac;
+
+    using Core.Schedulers;
+
     public class TestScheduler : Scheduler
     {
         public TestScheduler()
@@ -10,6 +16,13 @@ namespace Sintek.Schedule.Cli
             {
                 CreateDailyTriggeredJob<TestJob>(10, 18)
             };
+        }
+
+        protected override IContainer BuildContainer()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new JobsModule(Assembly.GetExecutingAssembly()));
+            return builder.Build();
         }
 
         protected override ScheduledJob[] Jobs { get; }

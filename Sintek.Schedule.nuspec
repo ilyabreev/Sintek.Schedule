@@ -13,6 +13,8 @@
             <group targetFramework=".NETFramework4.5">
                 <dependency id="Quartz" version="2.4.1" />
                 <dependency id="CommandLineParser" version="1.9.71" />
+                <dependency id="Autofac" version="4.3.0" />
+                <dependency id="Autofac.Extras.Quartz" version="3.3.0" />
             </group>
         </dependencies>
     </metadata>
