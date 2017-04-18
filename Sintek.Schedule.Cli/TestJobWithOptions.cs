@@ -3,7 +3,7 @@ using Sintek.Schedule.Core;
 
 namespace Sintek.Schedule.Cli
 {
-    public class TestJob : Job<TestOptions>
+    public class TestJobWithOptions : JobWithOptions<TestOptions>
     {
         protected override void Run(TestOptions options)
         {

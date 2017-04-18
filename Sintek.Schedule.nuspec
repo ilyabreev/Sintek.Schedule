@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>Sintek.Schedule</id>
-        <version>0.1.0</version>
+        <version>0.0.0</version>
         <authors>Ilya Breev</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Compact Quartz.net based library for quick integration of task scheduling into you app.</description>
@@ -15,6 +15,7 @@
                 <dependency id="CommandLineParser" version="1.9.71" />
                 <dependency id="Autofac" version="4.3.0" />
                 <dependency id="Autofac.Extras.Quartz" version="3.3.0" />
+                <dependency id="Sintek.Log4Net" version="1.1.0" />
             </group>
         </dependencies>
     </metadata>
