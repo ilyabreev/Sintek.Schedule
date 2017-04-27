@@ -29,7 +29,7 @@ namespace Sintek.Schedule.Core
                     var fail = FailedJobs.GetOrAdd(jobName, new FailDetails());
                     var refire = RefireConditionsChecker.CheckConditions(context.JobInstance.GetType(), fail);
                     ++fail;
-                    throw new JobExecutionException($"Critical exception in {jobName}. Job will {(refire ? "" : "NOT ")}be restarted", ex, refire);
+                    throw new JobExecutionException(ex, refire);
                 }
             }
         }
