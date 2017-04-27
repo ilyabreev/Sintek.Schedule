@@ -4,14 +4,10 @@
     using System.Linq;
     using System.Reflection;
     using System.Threading;
-
     using Autofac;
-
     using CommandLine;
-
     using Quartz;
     using Quartz.Util;
-
     using Sintek.Schedule.Core.Options;
 
     /// <summary>
@@ -22,17 +18,6 @@
         private readonly BaseOptions _baseOptions;
 
         private readonly Parser _parser;
-
-        protected Scheduler()
-        {
-            _baseOptions = new BaseOptions();
-            _parser = new Parser(s =>
-            {
-                s.IgnoreUnknownArguments = true;
-            });
-        }
-
-        protected abstract IContainer BuildContainer();
         
         public delegate void WrongBaseArguments(string[] args);
 
@@ -135,6 +120,17 @@
         /// Set of scheduled items for the current scheduler. Each ScheduleItem has its own job and trigger.
         /// </summary>
         protected abstract ScheduledJob[] Jobs { get; }
+
+        protected abstract IContainer BuildContainer();
+
+        protected Scheduler()
+        {
+            _baseOptions = new BaseOptions();
+            _parser = new Parser(s =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+        }
 
         /// <summary>
         /// Creates job with trigger that runs right now.
