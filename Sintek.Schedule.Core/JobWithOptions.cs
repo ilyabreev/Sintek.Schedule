@@ -11,6 +11,8 @@ namespace Sintek.Schedule.Core
             Run(options);
         }
 
+        protected abstract void Run(TOptions options);
+
         private TOptions ParseOptions(JobDataMap dataMap)
         {
             if (dataMap.Count == 0)
@@ -27,7 +29,5 @@ namespace Sintek.Schedule.Core
 
             return options;
         }
-
-        protected abstract void Run(TOptions options);
     }
 }

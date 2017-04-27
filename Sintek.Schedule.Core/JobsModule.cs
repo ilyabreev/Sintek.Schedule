@@ -1,10 +1,8 @@
 ﻿namespace Sintek.Schedule.Core
 {
     using System.Reflection;
-
     using Autofac;
     using Autofac.Extras.Quartz;
-
     using Module = Autofac.Module;
 
     public class JobsModule : Module
