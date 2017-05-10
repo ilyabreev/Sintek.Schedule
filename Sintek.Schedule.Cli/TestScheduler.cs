@@ -14,7 +14,8 @@ namespace Sintek.Schedule.Cli
         {
             Jobs = new[]
             {
-                CreateDailyTriggeredJob<TestJobWithOptions>(10, 18)
+                CreateDailyTriggeredJob<TestJobWithOptions>(10, 18),
+                CreateManuallyTriggeredJob<ManualTestJob>()
             };
         }
 

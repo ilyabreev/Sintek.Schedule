@@ -187,6 +187,15 @@
             return new ScheduledJob(job, trigger);
         }
 
+        /// <summary>
+        /// Creates job with empty trigger that runs on demand only
+        /// </summary>
+        /// <typeparam name="T">JobType</typeparam>
+        protected ScheduledJob CreateManuallyTriggeredJob<T>() where T : IJob
+        {
+            return new ScheduledJob(CreateJob(typeof(T)), null);
+        }
+
         private ITrigger CreateNowTrigger(string jobName)
         {
             return TriggerBuilder.Create()
@@ -221,7 +230,7 @@
 
         private void ScheduleRegularJobs(IScheduler scheduler)
         {
-            foreach (var item in Jobs)
+            foreach (var item in Jobs.Where(j => j.Trigger != null))
             {
                 scheduler.ScheduleJob(item.JobDetail, item.Trigger);
             }
