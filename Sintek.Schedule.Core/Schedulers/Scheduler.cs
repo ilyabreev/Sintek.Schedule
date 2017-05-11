@@ -153,7 +153,7 @@
         }
 
         /// <summary>
-        /// Creates job with trigger that runs on daily basis on fixed time of day
+        /// Creates job with trigger that runs on daily basis on fixed time of day in local time zone
         /// </summary>
         /// <typeparam name="T">Job type</typeparam>
         /// <param name="hours">Hours in (from 0 to 23)</param>
@@ -164,12 +164,36 @@
         }
 
         /// <summary>
-        /// Creates job with trigger that runs on daily basis on fixed time of day
+        /// Creates job with trigger that runs on daily basis on fixed time of day in any time zone
+        /// </summary>
+        /// <typeparam name="T">Job type</typeparam>
+        /// <param name="hours">Hours in (from 0 to 23)</param>
+        /// <param name="minutes">Minutes (from 0 to 59)</param>
+        /// <param name="tz">Time Zone</param>
+        protected ScheduledJob CreateDailyTriggeredJob<T>(int hours, int minutes, TimeZoneInfo tz) where T : IJob
+        {
+            return CreateDailyTriggeredJob(typeof(T), hours, minutes, tz);
+        }
+
+        /// <summary>
+        /// Creates job with trigger that runs on daily basis on fixed time of day in local time zone
         /// </summary>
         /// <param name="jobType">Job type</param>
         /// <param name="hours">Hours in (from 0 to 24)</param>
         /// <param name="minutes">Minutes (from 0 to 60)</param>
         protected ScheduledJob CreateDailyTriggeredJob(Type jobType, int hours, int minutes)
+        {
+            return CreateDailyTriggeredJob(jobType, hours, minutes, TimeZoneInfo.Local);
+        }
+
+        /// <summary>
+        /// Creates job with trigger that runs on daily basis on fixed time of day in any time zone
+        /// </summary>
+        /// <param name="jobType">Job type</param>
+        /// <param name="hours">Hours in (from 0 to 24)</param>
+        /// <param name="minutes">Minutes (from 0 to 60)</param>
+        /// <param name="tz">Time zone in which job should run</param>
+        protected ScheduledJob CreateDailyTriggeredJob(Type jobType, int hours, int minutes, TimeZoneInfo tz)
         {
             if (hours < 0 || hours > 23)
             {
@@ -183,7 +207,7 @@
 
             var jobName = GetJobName(jobType);
             var job = CreateJob(jobType);
-            var trigger = CreateDailyTrigger(jobName, hours, minutes);
+            var trigger = CreateDailyTrigger(jobName, hours, minutes, tz);
             return new ScheduledJob(job, trigger);
         }
 
@@ -204,12 +228,12 @@
                 .Build();
         }
 
-        private ITrigger CreateDailyTrigger(string jobName, int hours, int minutes)
+        private ITrigger CreateDailyTrigger(string jobName, int hours, int minutes, TimeZoneInfo tz)
         {
             return TriggerBuilder.Create()
                 .WithIdentity($"{jobName}_Daily_{hours}_{minutes}")
                 .ForJob(jobName)
-                .WithDailyTimeIntervalSchedule(x => x.WithIntervalInHours(24).StartingDailyAt(new TimeOfDay(hours, minutes)))
+                .WithDailyTimeIntervalSchedule(x => x.WithIntervalInHours(24).StartingDailyAt(new TimeOfDay(hours, minutes)).InTimeZone(tz))
                 .Build();
         }
 

@@ -2,6 +2,7 @@
 
 namespace Sintek.Schedule.Cli
 {
+    using System;
     using System.Reflection;
 
     using Autofac;
@@ -14,7 +15,7 @@ namespace Sintek.Schedule.Cli
         {
             Jobs = new[]
             {
-                CreateDailyTriggeredJob<TestJobWithOptions>(10, 18),
+                CreateDailyTriggeredJob<TestJobWithOptions>(13, 25, TimeZoneInfo.Utc),
                 CreateManuallyTriggeredJob<ManualTestJob>()
             };
         }
