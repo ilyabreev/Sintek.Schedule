@@ -62,6 +62,8 @@
         {
             var container = BuildContainer();
             var scheduler = container.Resolve<IScheduler>();
+            var listener = container.Resolve<ISchedulerListener>();
+            scheduler.ListenerManager.AddSchedulerListener(listener);
             scheduler.Start();
             try
             {

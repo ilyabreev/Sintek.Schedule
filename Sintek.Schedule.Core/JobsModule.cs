@@ -3,6 +3,11 @@
     using System.Reflection;
     using Autofac;
     using Autofac.Extras.Quartz;
+
+    using Quartz;
+
+    using Schedulers;
+
     using Module = Autofac.Module;
 
     public class JobsModule : Module
@@ -22,6 +27,7 @@
                 {
                     AutoWireProperties = true
                 });
+            builder.RegisterType<SchedulerListener>().As<ISchedulerListener>();
         }
     }
 }
