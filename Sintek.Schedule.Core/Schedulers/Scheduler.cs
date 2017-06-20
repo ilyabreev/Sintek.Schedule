@@ -104,10 +104,8 @@
                 else
                 {
                     ScheduleRegularJobs(_scheduler);
+                    CheckIfShutdownRequested();
                 }
-
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                CheckIfShutdownRequested();
             }
             catch (Exception e)
             {
