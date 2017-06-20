@@ -15,8 +15,9 @@ namespace Sintek.Schedule.Cli
         {
             Jobs = new[]
             {
-                CreateDailyTriggeredJob<TestJobWithOptions>(13, 25, TimeZoneInfo.Utc),
-                CreateManuallyTriggeredJob<ManualTestJob>()
+                //CreateDailyTriggeredJob<TestJobWithOptions>(13, 25, TimeZoneInfo.Utc),
+                CreateManuallyTriggeredJob<ManualTestJob>(),
+                CreateNowTriggeredJob<TestJobWithOptions>()
             };
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace Sintek.Schedule.Core.Schedulers
 {
     using System;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -15,10 +16,14 @@
     /// </summary>
     public abstract class Scheduler
     {
+        private const string ShutdownFileName = "shutdown.lock";
+
         private readonly BaseOptions _baseOptions;
 
         private readonly Parser _parser;
-        
+
+        private IScheduler _scheduler;
+
         public delegate void WrongBaseArguments(string[] args);
 
         public delegate void ManualJobStart(string jobName);
@@ -61,10 +66,10 @@
         public void Start(string[] args)
         {
             var container = BuildContainer();
-            var scheduler = container.Resolve<IScheduler>();
+            _scheduler = container.Resolve<IScheduler>();
             var listener = container.Resolve<ISchedulerListener>();
-            scheduler.ListenerManager.AddSchedulerListener(listener);
-            scheduler.Start();
+            _scheduler.ListenerManager.AddSchedulerListener(listener);
+            _scheduler.Start();
             try
             {
                 if (!_parser.ParseArguments(args, _baseOptions))
@@ -94,27 +99,28 @@
                         }
                     }
 
-                    ScheduleImmediateJob(scheduler, _baseOptions.JobName, customOptions);
+                    ScheduleImmediateJob(_scheduler, _baseOptions.JobName, customOptions);
                 }
                 else
                 {
-                    ScheduleRegularJobs(scheduler);
+                    ScheduleRegularJobs(_scheduler);
                 }
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
+                CheckIfShutdownRequested();
             }
             catch (Exception e)
             {
                 OnStartError(e);
                 if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
                 {
-                    scheduler.Shutdown();
+                    _scheduler.Shutdown();
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
             {
-                scheduler.Shutdown(true);
+                _scheduler.Shutdown(true);
             }
         }
 
@@ -281,6 +287,20 @@
         private Type FindBaseJobType(Assembly assembly)
         {
             return assembly.GetTypes().SingleOrDefault(t => t.Name == _baseOptions.JobName)?.BaseType;
+        }
+
+        private void CheckIfShutdownRequested()
+        {
+            while (!File.Exists(ShutdownFileName))
+            {
+                Thread.Sleep(1000);
+            }
+
+            _scheduler.Shutdown(true);
+            if (File.Exists(ShutdownFileName))
+            {
+                File.Delete(ShutdownFileName);
+            }
         }
     }
 }

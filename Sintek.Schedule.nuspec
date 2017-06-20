@@ -21,5 +21,7 @@
     </metadata>
     <files>
         <file src="Sintek.Schedule.Core\bin\Release\Sintek.Schedule.Core.dll" target="lib\net452\Sintek.Schedule.Core.dll" />
+        <file src="app.config.install.xdt" target="Content" />
+        <file src="app.config.uninstall.xdt" target="Content" />
     </files>
 </package>

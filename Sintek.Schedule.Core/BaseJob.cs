@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Concurrent;
 using System.Threading;
 using log4net;
@@ -7,14 +7,14 @@ using Sintek.Schedule.Core.Misc;
 
 namespace Sintek.Schedule.Core
 {
-    public abstract class BaseJob : IJob
+    public abstract class BaseJob : IInterruptableJob
     {
-        private static ConcurrentDictionary<string, FailDetails> FailedJobs { get; } = new ConcurrentDictionary<string, FailDetails>();
-
+        protected bool Interrupted { get; private set; }
+        
         /// <summary>
-        /// Запускает выполнение джоба.
+        /// Р—Р°РїСѓСЃРєР°РµС‚ РІС‹РїРѕР»РЅРµРЅРёРµ РґР¶РѕР±Р°.
         /// </summary>
-        /// <param name="context">Объект контекста джоба <see cref="IJobExecutionContext"/>.</param>
+        /// <param name="context">РћР±СЉРµРєС‚ РєРѕРЅС‚РµРєСЃС‚Р° РґР¶РѕР±Р° <see cref="IJobExecutionContext"/>.</param>
         public void Execute(IJobExecutionContext context)
         {
             using (LogicalThreadContext.Stacks["NDC"].Push(Guid.NewGuid().ToString()))
@@ -35,13 +35,23 @@ namespace Sintek.Schedule.Core
         }
 
         /// <summary>
-        /// Блокирует текущий поток джоба.
+        /// Р”Р°С‘С‚ СЃРёРіРЅР°Р» Рѕ С‚РѕРј, С‡С‚Рѕ РґР¶РѕР± РїРѕРїСЂРѕСЃРёР»Рё Р·Р°РІРµСЂС€РёС‚СЊСЃСЏ
+        /// </summary>
+        public void Interrupt()
+        {
+            Interrupted = true;
+        }
+
+        /// <summary>
+        /// Р‘Р»РѕРєРёСЂСѓРµС‚ С‚РµРєСѓС‰РёР№ РїРѕС‚РѕРє РґР¶РѕР±Р°.
         /// </summary>
         public void Wait()
         {
             new ManualResetEvent(false).WaitOne();
         }
-
+        
         protected abstract void ExecuteJob(IJobExecutionContext context);
+
+        private static ConcurrentDictionary<string, FailDetails> FailedJobs { get; } = new ConcurrentDictionary<string, FailDetails>();
     }
 }
