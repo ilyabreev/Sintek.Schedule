@@ -100,6 +100,8 @@
                     }
 
                     ScheduleImmediateJob(_scheduler, _baseOptions.JobName, customOptions);
+                    Thread.Sleep(TimeSpan.FromSeconds(3));
+                    _scheduler.Shutdown(true);
                 }
                 else
                 {
@@ -114,11 +116,6 @@
                 {
                     _scheduler.Shutdown();
                 }
-            }
-
-            if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
-            {
-                _scheduler.Shutdown(true);
             }
         }
 
