@@ -18,5 +18,12 @@ namespace Sintek.Schedule.Cli
 
             Console.WriteLine("Shutdown requested!");
         }
+
+        public bool Interrupted { get; set; }
+
+        public override void Interrupt()
+        {
+            Interrupted = true;
+        }
     }
 }
