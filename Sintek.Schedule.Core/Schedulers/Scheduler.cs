@@ -66,55 +66,58 @@
         public void Start(string[] args)
         {
             var container = BuildContainer();
-            _scheduler = container.Resolve<IScheduler>();
-            var listener = container.Resolve<ISchedulerListener>();
-            _scheduler.ListenerManager.AddSchedulerListener(listener);
-            _scheduler.Start();
-            try
+            using (var scope = container.BeginLifetimeScope())
             {
-                if (!_parser.ParseArguments(args, _baseOptions))
+                _scheduler = scope.Resolve<IScheduler>();
+                var listener = scope.Resolve<ISchedulerListener>();
+                _scheduler.ListenerManager.AddSchedulerListener(listener);
+                _scheduler.Start();
+                try
                 {
-                    OnWrongBaseArguments(args);
-                    return;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
-                {
-                    OnManualJobStart(_baseOptions.JobName);
-                    object customOptions = null;
-                    var baseJobType = FindBaseJobType(Assembly.GetExecutingAssembly()) ??
-                        FindBaseJobType(Assembly.GetCallingAssembly());
-                    if (baseJobType != null && baseJobType.IsGenericType)
+                    if (!_parser.ParseArguments(args, _baseOptions))
                     {
-                        var customOptionsType = baseJobType.GenericTypeArguments.FirstOrDefault();
-                        if (customOptionsType != null)
-                        {
-                            OnJobArgumentsParsing(customOptionsType);
-                            customOptions = Activator.CreateInstance(customOptionsType);
-                            if (!_parser.ParseArguments(args, customOptions))
-                            {
-                                OnWrongJobArguments(customOptionsType, args);
-                                return;
-                            }
-                        }
+                        OnWrongBaseArguments(args);
+                        return;
                     }
 
-                    ScheduleImmediateJob(_scheduler, _baseOptions.JobName, customOptions);
-                    Thread.Sleep(TimeSpan.FromSeconds(3));
-                    _scheduler.Shutdown(true);
+                    if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
+                    {
+                        OnManualJobStart(_baseOptions.JobName);
+                        object customOptions = null;
+                        var baseJobType = FindBaseJobType(Assembly.GetExecutingAssembly()) ??
+                                          FindBaseJobType(Assembly.GetCallingAssembly());
+                        if (baseJobType != null && baseJobType.IsGenericType)
+                        {
+                            var customOptionsType = baseJobType.GenericTypeArguments.FirstOrDefault();
+                            if (customOptionsType != null)
+                            {
+                                OnJobArgumentsParsing(customOptionsType);
+                                customOptions = Activator.CreateInstance(customOptionsType);
+                                if (!_parser.ParseArguments(args, customOptions))
+                                {
+                                    OnWrongJobArguments(customOptionsType, args);
+                                    return;
+                                }
+                            }
+                        }
+
+                        ScheduleImmediateJob(_scheduler, _baseOptions.JobName, customOptions);
+                        Thread.Sleep(TimeSpan.FromSeconds(3));
+                        _scheduler.Shutdown(true);
+                    }
+                    else
+                    {
+                        ScheduleRegularJobs(_scheduler);
+                        CheckIfShutdownRequested();
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    ScheduleRegularJobs(_scheduler);
-                    CheckIfShutdownRequested();
-                }
-            }
-            catch (Exception e)
-            {
-                OnStartError(e);
-                if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
-                {
-                    _scheduler.Shutdown();
+                    OnStartError(e);
+                    if (!string.IsNullOrWhiteSpace(_baseOptions.JobName))
+                    {
+                        _scheduler.Shutdown();
+                    }
                 }
             }
         }
