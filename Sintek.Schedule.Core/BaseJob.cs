@@ -9,7 +9,12 @@ namespace Sintek.Schedule.Core
 {
     public abstract class BaseJob : IInterruptableJob
     {
-        protected bool Interrupted { get; private set; }
+        private readonly ManualResetEvent _manualResetEvent;
+
+        protected BaseJob()
+        {
+            _manualResetEvent = new ManualResetEvent(false);
+        }
         
         /// <summary>
         /// Запускает выполнение джоба.
@@ -37,17 +42,19 @@ namespace Sintek.Schedule.Core
         /// <summary>
         /// Даёт сигнал о том, что джоб попросили завершиться
         /// </summary>
-        public void Interrupt()
-        {
-            Interrupted = true;
-        }
+        public abstract void Interrupt();
 
         /// <summary>
         /// Блокирует текущий поток джоба.
         /// </summary>
         public void Wait()
         {
-            new ManualResetEvent(false).WaitOne();
+            _manualResetEvent.WaitOne();
+        }
+
+        public void Release()
+        {
+            _manualResetEvent.Set();
         }
         
         protected abstract void ExecuteJob(IJobExecutionContext context);
