@@ -9,6 +9,8 @@ namespace Sintek.Schedule.Core
 {
     public abstract class BaseJob : IInterruptableJob
     {
+        protected bool Manual { get; private set; }
+
         private readonly ManualResetEvent _manualResetEvent;
 
         protected BaseJob()
@@ -24,6 +26,7 @@ namespace Sintek.Schedule.Core
         {
             using (LogicalThreadContext.Stacks["NDC"].Push(Guid.NewGuid().ToString()))
             {
+                Manual = Convert.ToBoolean(context.JobDetail.JobDataMap["manual"]);
                 try
                 {
                     ExecuteJob(context);

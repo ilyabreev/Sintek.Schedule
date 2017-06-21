@@ -138,19 +138,19 @@
         /// <summary>
         /// Creates job with trigger that runs right now.
         /// </summary>
-        protected ScheduledJob CreateNowTriggeredJob<T>() where T : IJob
+        protected ScheduledJob CreateNowTriggeredJob<T>(bool manual = false) where T : IJob
         {
-            return CreateNowTriggeredJob(typeof(T));
+            return CreateNowTriggeredJob(typeof(T), manual);
         }
 
         /// <summary>
         /// Creates job with trigger that runs right now.
         /// </summary>
         /// <param name="jobType">Type of the job</param>
-        protected ScheduledJob CreateNowTriggeredJob(Type jobType)
+        protected ScheduledJob CreateNowTriggeredJob(Type jobType, bool manual = false)
         {
             var jobName = GetJobName(jobType);
-            var job = CreateJob(jobType);
+            var job = CreateJob(jobType, manual);
             var trigger = CreateNowTrigger(jobName);
             return new ScheduledJob(job, trigger);
         }
@@ -250,9 +250,9 @@
             return CreateJob(typeof(T));
         }
 
-        private IJobDetail CreateJob(Type jobType)
+        private IJobDetail CreateJob(Type jobType, bool manual = false)
         {
-            return JobBuilder.Create(jobType).WithIdentity(GetJobName(jobType)).Build();
+            return JobBuilder.Create(jobType).WithIdentity(GetJobName(jobType)).UsingJobData("manual", manual).Build();
         }
 
         private void ScheduleRegularJobs(IScheduler scheduler)
@@ -266,7 +266,7 @@
         private void ScheduleImmediateJob(IScheduler scheduler, string jobName, object options = null)
         {
             var immediateJob = Jobs.Single(job => job.JobDetail.Key.Name == jobName).JobDetail.DeepClone();
-            var item = CreateNowTriggeredJob(immediateJob.JobType);
+            var item = CreateNowTriggeredJob(immediateJob.JobType, true);
             if (options != null)
             {
                 var optionProperties = options.GetType().GetProperties();

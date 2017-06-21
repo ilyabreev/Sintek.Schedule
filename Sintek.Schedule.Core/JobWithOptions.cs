@@ -24,7 +24,11 @@ namespace Sintek.Schedule.Core
             var optionsType = typeof(TOptions);
             foreach (var key in dataMap.Keys)
             {
-                optionsType.GetProperty(key).SetValue(options, dataMap[key], null);
+                var property = optionsType.GetProperty(key);
+                if (property != null)
+                {
+                    property.SetValue(options, dataMap[key], null);
+                }
             }
 
             return options;
