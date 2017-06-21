@@ -15,9 +15,5 @@
                 Thread.Sleep(1000);
             }
         }
-
-        public override void Interrupt()
-        {
-        }
     }
 }

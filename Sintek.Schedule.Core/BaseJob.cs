@@ -9,7 +9,15 @@ namespace Sintek.Schedule.Core
 {
     public abstract class BaseJob : IInterruptableJob
     {
-        protected bool Manual { get; private set; }
+        /// <summary>
+        /// Был ли отменен джоб
+        /// </summary>
+        protected bool IsCancelled { get; set; }
+
+        /// <summary>
+        /// Был ли джоб запущен вручную
+        /// </summary>
+        protected bool IsManual { get; private set; }
 
         private readonly ManualResetEvent _manualResetEvent;
 
@@ -17,7 +25,7 @@ namespace Sintek.Schedule.Core
         {
             _manualResetEvent = new ManualResetEvent(false);
         }
-        
+
         /// <summary>
         /// Запускает выполнение джоба.
         /// </summary>
@@ -26,7 +34,7 @@ namespace Sintek.Schedule.Core
         {
             using (LogicalThreadContext.Stacks["NDC"].Push(Guid.NewGuid().ToString()))
             {
-                Manual = Convert.ToBoolean(context.JobDetail.JobDataMap["manual"]);
+                IsManual = Convert.ToBoolean(context.JobDetail.JobDataMap["manual"]);
                 try
                 {
                     ExecuteJob(context);
@@ -43,9 +51,21 @@ namespace Sintek.Schedule.Core
         }
 
         /// <summary>
-        /// Даёт сигнал о том, что джоб попросили завершиться
+        /// Вызывается, когда джоб, запущенный по расписанию, требуется прервать
         /// </summary>
-        public abstract void Interrupt();
+        public event EventHandler Cancelled;
+
+        /// <summary>
+        /// Вызывается планировщиком, когда планировщик останавливается
+        /// </summary>
+        public void Interrupt()
+        {
+            if (!IsManual)
+            {
+                IsCancelled = true;
+                Cancelled?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Блокирует текущий поток джоба.
